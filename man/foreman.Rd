@@ -18,6 +18,7 @@ foreman(
   .id                          = args_default()$.id,
   .instruments                 = args_default()$.instruments,
   .iter_max                    = args_default()$.iter_max,
+  .missing                     = args_default()$.missing,
   .normality                   = args_default()$.normality,
   .PLS_approach_cf             = args_default()$.PLS_approach_cf,
   .PLS_ignore_structural_model = args_default()$.PLS_ignore_structural_model,
@@ -93,6 +94,12 @@ instruments for themselves. Defaults to \code{NULL}.}
 If \code{iter_max = 1} and \code{.approach_weights = "PLS-PM"} one-step weights are returned.
 If the algorithm exceeds the specified number, weights of iteration step
 \code{.iter_max - 1}  will be returned with a warning. Defaults to \code{100}.}
+
+\item{.missing}{Character string. How should missing values in \code{.data} be
+handled? One of: "\emph{error}" or "\emph{listwise}". If "\emph{error}", estimation stops
+when missing values are present. If "\emph{listwise}", rows containing missing
+values in model indicators are removed before estimation. Defaults to
+"\emph{error}".}
 
 \item{.normality}{Logical. Should joint normality of
 \eqn{[\eta_{1:p}; \zeta; \epsilon]}{[\eta_(1:p); \zeta; \epsilon]}

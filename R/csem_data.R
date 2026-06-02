@@ -5,7 +5,8 @@
 #' @usage processData(
 #'   .data        = NULL, 
 #'   .model       = NULL, 
-#'   .instruments = NULL
+#'   .instruments = NULL,
+#'   .missing     = "error"
 #'   )
 #'
 #' @inheritParams csem_arguments
@@ -19,7 +20,8 @@
 processData <- function(
   .data        = NULL, 
   .model       = NULL, 
-  .instruments = NULL
+  .instruments = NULL,
+  .missing     = "error"
   ) {
 
   ### Checks, errors and warnings ========
@@ -117,10 +119,18 @@ processData <- function(
   .data_temp <- .data[!complete.cases(.data), , drop = FALSE]
   
   if(length(rownames(.data_temp)) > 0) {
-    stop2("The following error occured while processing the data:\n",
-          "Data set contains missing values in rows:", 
-          paste0("`", rownames(.data_temp), "`", collapse = ", "),
-          "\nRemove NAs or use imputation methods to replace them.")
+    if(.missing == "listwise") {
+      .data <- .data[complete.cases(.data), , drop = FALSE]
+      warning2("The following warning occured while processing the data:\n",
+               "Data set contains missing values in rows:",
+               paste0("`", rownames(.data_temp), "`", collapse = ", "),
+               "\nThese rows were removed using listwise deletion.")
+    } else {
+      stop2("The following error occured while processing the data:\n",
+            "Data set contains missing values in rows:", 
+            paste0("`", rownames(.data_temp), "`", collapse = ", "),
+            "\nRemove NAs, use imputation methods to replace them, or set `.missing = \"listwise\"`.")
+    }
   }
   ## Return
   return(.data)

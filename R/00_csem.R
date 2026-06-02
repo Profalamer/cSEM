@@ -27,8 +27,8 @@
 #' Depending on the type/class of the indicator data provided cSEM computes the indicator 
 #' correlation matrix in different ways. See [calculateIndicatorCor()] for details.
 #'
-#' In the current version `.data` must not contain missing values. Future versions
-#' are likely to handle missing values as well.
+#' Missing values in `.data` are rejected by default. Set `.missing = "listwise"`
+#' to remove rows with missing values before estimation.
 #' 
 #' To provide a model use the [lavaan model syntax][lavaan::model.syntax].
 #' Note, however, that \pkg{cSEM} currently only supports the "standard" lavaan
@@ -218,6 +218,7 @@
 #' .id                    = NULL,
 #' .instruments           = NULL,
 #' .iter_max              = 100,
+#' .missing               = c("error", "listwise"),
 #' .normality             = FALSE,
 #' .PLS_approach_cf       = c("dist_squared_euclid", "dist_euclid_weighted", 
 #'                            "fisher_transformed", "mean_arithmetic",
@@ -323,6 +324,7 @@ csem <- function(
   .id                    = NULL,
   .instruments           = NULL,
   .iter_max              = 100,
+  .missing               = c("error", "listwise"),
   .normality             = FALSE,
   .PLS_approach_cf       = c("dist_squared_euclid", "dist_euclid_weighted", 
                              "fisher_transformed", "mean_arithmetic",
@@ -354,6 +356,7 @@ csem <- function(
   .conv_criterion       <- match.arg(.conv_criterion)
   .eval_plan            <- match.arg(.eval_plan)
   .handle_inadmissibles <- match.arg(.handle_inadmissibles)
+  .missing              <- match.arg(.missing)
   .PLS_approach_cf      <- match.arg(.PLS_approach_cf)
   .PLS_weight_scheme_inner <- match.arg(.PLS_weight_scheme_inner)
   .resample_method      <- match.arg(.resample_method)
@@ -477,6 +480,9 @@ csem <- function(
         # Order data according to the ordering of the measurement model; delete
         # all columns that are not needed
         x <- x[, setdiff(colnames(model_original$measurement), model_original$vars_attached_to_2nd)]
+        if(.missing == "listwise") {
+          x <- x[complete.cases(x), , drop = FALSE]
+        }
         x
       })
       
@@ -486,6 +492,10 @@ csem <- function(
       # data_pooled[, "id"] <- rep(names(out), times = sapply(.data, nrow))
       data_pooled
     } else {
+      if(.missing == "listwise") {
+        columns <- setdiff(colnames(model_original$measurement), model_original$vars_attached_to_2nd)
+        .data <- .data[complete.cases(.data[, columns, drop = FALSE]), , drop = FALSE]
+      }
       .data
     }
     ## Add second order approach to $Information

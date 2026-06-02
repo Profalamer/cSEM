@@ -21,6 +21,7 @@
 #'   .id                          = args_default()$.id,
 #'   .instruments                 = args_default()$.instruments,
 #'   .iter_max                    = args_default()$.iter_max,
+#'   .missing                     = args_default()$.missing,
 #'   .normality                   = args_default()$.normality,
 #'   .PLS_approach_cf             = args_default()$.PLS_approach_cf,
 #'   .PLS_ignore_structural_model = args_default()$.PLS_ignore_structural_model,
@@ -53,6 +54,7 @@ foreman <- function(
   .id                          = args_default()$.id,
   .instruments                 = args_default()$.instruments,
   .iter_max                    = args_default()$.iter_max,
+  .missing                     = args_default()$.missing,
   .normality                   = args_default()$.normality,
   .PLS_approach_cf             = args_default()$.PLS_approach_cf,
   .PLS_ignore_structural_model = args_default()$.PLS_ignore_structural_model,
@@ -71,7 +73,8 @@ foreman <- function(
   ## Prepare, check, and clean data (a data.frame)
   X_cleaned <- processData(.data = .data, 
                            .model = csem_model,
-                           .instruments = NULL)
+                           .instruments = NULL,
+                           .missing = .missing)
   
   ### Computation ==============================================================
   ## Calculate empirical indicator covariance/correlation matrix

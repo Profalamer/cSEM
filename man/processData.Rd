@@ -7,7 +7,8 @@
 processData(
   .data        = NULL, 
   .model       = NULL, 
-  .instruments = NULL
+  .instruments = NULL,
+  .missing     = "error"
   )
 }
 \arguments{
@@ -26,6 +27,12 @@ equation whose explanatory variables are endogenous. The vectors
 contain the names of the instruments corresponding to each equation. Note
 that exogenous variables of a given equation \strong{must} be supplied as
 instruments for themselves. Defaults to \code{NULL}.}
+
+\item{.missing}{Character string. How should missing values in \code{.data} be
+handled? One of: "\emph{error}" or "\emph{listwise}". If "\emph{error}", estimation stops
+when missing values are present. If "\emph{listwise}", rows containing missing
+values in model indicators are removed before estimation. Defaults to
+"\emph{error}".}
 }
 \value{
 A (N x K) data.frame containing the standardized data with columns ordered

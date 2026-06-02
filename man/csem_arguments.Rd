@@ -239,6 +239,12 @@ Default to c("\emph{MAE}", "\emph{RMSE}", "\emph{Q2}").}
 \item{.model}{A model in \link[lavaan:model.syntax]{lavaan model syntax}
 or a \link{cSEMModel} list.}
 
+\item{.missing}{Character string. How should missing values in \code{.data} be
+handled? One of: "\emph{error}" or "\emph{listwise}". If "\emph{error}", estimation stops
+when missing values are present. If "\emph{listwise}", rows containing missing
+values in model indicators are removed before estimation. Defaults to
+"\emph{error}".}
+
 \item{.moderator}{Character string. The name of the moderator variable.}
 
 \item{.modes}{A vector giving the mode for each construct in the form \code{"name" = "mode"}.

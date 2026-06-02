@@ -15,6 +15,29 @@ test_that("No data/model provided causes an error", {
   )
 })
 
+test_that("Missing data can be handled by listwise deletion", {
+  dat_missing <- threecommonfactors
+  dat_missing[3, "y11"] <- NA
+  dat_missing[4, "not_used_numeric"] <- NA
+  
+  expect_error(
+    csem(dat_missing, model_linear),
+    "Data set contains missing values"
+  )
+  
+  expect_warning(
+    res_listwise <- csem(dat_missing, model_linear, .missing = "listwise"),
+    "listwise deletion"
+  )
+  
+  res_manual <- csem(dat_missing[complete.cases(dat_missing[, c(
+    "y11", "y12", "y13", "y21", "y22", "y23", "y31", "y32", "y33"
+  )]), ], model_linear)
+  
+  expect_equal(res_listwise$Information$Data, res_manual$Information$Data)
+  expect_equal(res_listwise$Estimates$Path_estimates, res_manual$Estimates$Path_estimates)
+})
+
 # ==============================================================================
 # DGPs
 # ==============================================================================
