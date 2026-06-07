@@ -130,26 +130,14 @@ processData <- function(
       .data <- .data[complete.cases(.data), , drop = FALSE]
       missing_info$Action <- "Rows with missing values were removed before estimation."
       missing_info$Number_of_rows_removed <- length(rownames(.data_temp))
-      warning2("The following warning occured while processing the data:\n",
-               "Data set contains missing values in rows:",
-               paste0("`", rownames(.data_temp), "`", collapse = ", "),
-               "\nThese rows were removed using listwise deletion.")
     } else if(.missing == "mean") {
       .data <- imputeMissingMean(.data)
       missing_info$Action <- "Missing values were replaced by indicator means before estimation."
       missing_info$Number_of_rows_imputed <- length(rownames(.data_temp))
-      warning2("The following warning occured while processing the data:\n",
-               "Data set contains missing values in rows:",
-               paste0("`", rownames(.data_temp), "`", collapse = ", "),
-               "\nMissing values were replaced by indicator means.")
     } else if(.missing == "regression") {
       .data <- imputeMissingRegression(.data)
       missing_info$Action <- "Missing values were replaced by regression imputation before estimation."
       missing_info$Number_of_rows_imputed <- length(rownames(.data_temp))
-      warning2("The following warning occured while processing the data:\n",
-               "Data set contains missing values in rows:",
-               paste0("`", rownames(.data_temp), "`", collapse = ", "),
-               "\nMissing values were replaced by regression imputation.")
     } else {
       stop2("The following error occured while processing the data:\n",
             "Data set contains missing values in rows:", 
