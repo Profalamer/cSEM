@@ -28,11 +28,6 @@ test_that("Missing data can be handled by listwise deletion", {
   expect_true(res_default$Information$Missing_data$Missing_data)
   expect_equal(res_default$Information$Missing_data$Number_of_rows_removed, 1)
   
-  expect_error(
-    csem(dat_missing, model_linear, .missing = "error"),
-    "Data set contains missing values"
-  )
-  
   expect_warning(
     res_listwise <- csem(dat_missing, model_linear, .missing = "listwise"),
     "listwise deletion"
@@ -58,7 +53,7 @@ test_that("Missing data can be handled by mean replacement", {
   
   expect_false(anyNA(data_mean))
   expect_equal(attr(data_mean, "missing_info")$Method, "mean")
-  expect_equal(data_mean[3, "y11"], mean(threecommonfactors$y11, na.rm = TRUE))
+  expect_equal(data_mean[3, "y11"], mean(dat_missing$y11, na.rm = TRUE))
   expect_equal(nrow(data_mean), nrow(threecommonfactors))
 })
 

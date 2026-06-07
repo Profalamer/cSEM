@@ -28,7 +28,6 @@
 #' correlation matrix in different ways. See [calculateIndicatorCor()] for details.
 #'
 #' Missing values in `.data` are handled by listwise deletion by default. Set
-#' `.missing = "error"` to stop estimation if missing values are present,
 #' `.missing = "mean"` to replace missing values by indicator means, or
 #' `.missing = "regression"` to use regression imputation.
 #' 
@@ -220,7 +219,7 @@
 #' .id                    = NULL,
 #' .instruments           = NULL,
 #' .iter_max              = 100,
-#' .missing               = c("listwise", "error", "mean", "regression"),
+#' .missing               = c("listwise", "mean", "regression"),
 #' .normality             = FALSE,
 #' .PLS_approach_cf       = c("dist_squared_euclid", "dist_euclid_weighted", 
 #'                            "fisher_transformed", "mean_arithmetic",
@@ -326,7 +325,7 @@ csem <- function(
   .id                    = NULL,
   .instruments           = NULL,
   .iter_max              = 100,
-  .missing               = c("listwise", "error", "mean", "regression"),
+  .missing               = c("listwise", "mean", "regression"),
   .normality             = FALSE,
   .PLS_approach_cf       = c("dist_squared_euclid", "dist_euclid_weighted", 
                              "fisher_transformed", "mean_arithmetic",

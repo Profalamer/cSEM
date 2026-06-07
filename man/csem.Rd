@@ -21,7 +21,7 @@ csem(
 .id                    = NULL,
 .instruments           = NULL,
 .iter_max              = 100,
-.missing               = c("listwise", "error", "mean", "regression"),
+.missing               = c("listwise", "mean", "regression"),
 .normality             = FALSE,
 .PLS_approach_cf       = c("dist_squared_euclid", "dist_euclid_weighted", 
                            "fisher_transformed", "mean_arithmetic",
@@ -117,12 +117,11 @@ If the algorithm exceeds the specified number, weights of iteration step
 \code{.iter_max - 1}  will be returned with a warning. Defaults to \code{100}.}
 
 \item{.missing}{Character string. How should missing values in \code{.data} be
-handled? One of: "\emph{listwise}", "\emph{error}", "\emph{mean}", or "\emph{regression}". If
+handled? One of: "\emph{listwise}", "\emph{mean}", or "\emph{regression}". If
 "\emph{listwise}", rows containing missing values in model indicators are removed
-before estimation. If "\emph{error}", estimation stops when missing values are
-present. If "\emph{mean}", missing values are replaced by indicator means. If
-"\emph{regression}", missing values are replaced by deterministic regression
-imputation. Defaults to "\emph{listwise}".}
+before estimation. If "\emph{mean}", missing values are replaced by indicator
+means. If "\emph{regression}", missing values are replaced by deterministic
+regression imputation. Defaults to "\emph{listwise}".}
 
 \item{.normality}{Logical. Should joint normality of
 \eqn{[\eta_{1:p}; \zeta; \epsilon]}{[\eta_(1:p); \zeta; \epsilon]}
@@ -254,7 +253,6 @@ Depending on the type/class of the indicator data provided cSEM computes the ind
 correlation matrix in different ways. See \code{\link[=calculateIndicatorCor]{calculateIndicatorCor()}} for details.
 
 Missing values in \code{.data} are handled by listwise deletion by default. Set
-\code{.missing = "error"} to stop estimation if missing values are present,
 \code{.missing = "mean"} to replace missing values by indicator means, or
 \code{.missing = "regression"} to use regression imputation.
 

@@ -240,12 +240,11 @@ Default to c("\emph{MAE}", "\emph{RMSE}", "\emph{Q2}").}
 or a \link{cSEMModel} list.}
 
 \item{.missing}{Character string. How should missing values in \code{.data} be
-handled? One of: "\emph{listwise}", "\emph{error}", "\emph{mean}", or "\emph{regression}". If
+handled? One of: "\emph{listwise}", "\emph{mean}", or "\emph{regression}". If
 "\emph{listwise}", rows containing missing values in model indicators are removed
-before estimation. If "\emph{error}", estimation stops when missing values are
-present. If "\emph{mean}", missing values are replaced by indicator means. If
-"\emph{regression}", missing values are replaced by deterministic regression
-imputation. Defaults to "\emph{listwise}".}
+before estimation. If "\emph{mean}", missing values are replaced by indicator
+means. If "\emph{regression}", missing values are replaced by deterministic
+regression imputation. Defaults to "\emph{listwise}".}
 
 \item{.moderator}{Character string. The name of the moderator variable.}
 

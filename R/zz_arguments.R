@@ -182,12 +182,11 @@
 #' @param .model A model in [lavaan model syntax][lavaan::model.syntax] 
 #'   or a [cSEMModel] list.
 #' @param .missing Character string. How should missing values in `.data` be
-#'   handled? One of: "*listwise*", "*error*", "*mean*", or "*regression*". If
+#'   handled? One of: "*listwise*", "*mean*", or "*regression*". If
 #'   "*listwise*", rows containing missing values in model indicators are removed
-#'   before estimation. If "*error*", estimation stops when missing values are
-#'   present. If "*mean*", missing values are replaced by indicator means. If
-#'   "*regression*", missing values are replaced by deterministic regression
-#'   imputation. Defaults to "*listwise*".
+#'   before estimation. If "*mean*", missing values are replaced by indicator
+#'   means. If "*regression*", missing values are replaced by deterministic
+#'   regression imputation. Defaults to "*listwise*".
 #' @param .moderator Character string. The name of the moderator variable.
 #' @param .modes A vector giving the mode for each construct in the form `"name" = "mode"`. 
 #'   Only used internally. 
@@ -524,7 +523,7 @@ args_default <- function(.choices = FALSE) {
     .matrices                = NULL,
     .metrics                 = c("MAE", "RMSE", "Q2", "MER", 
                                  "MAPE", "MSE2", "U1", "U2" , "UM", "UR", "UD"),
-    .missing                 = c("listwise", "error", "mean", "regression"),
+    .missing                 = c("listwise", "mean", "regression"),
     .model                   = NULL,
     .moderator               = NULL,
     .modes                   = NULL,
