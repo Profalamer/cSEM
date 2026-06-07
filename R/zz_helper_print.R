@@ -36,7 +36,7 @@ printSummarizeOverview <- function(.summarize_object) {
   if(!is.null(x$Missing_data) && isTRUE(x$Missing_data$Missing_data)) {
     cat2(
       col_align("\n\tMissing data handling", 35), "= ",
-      x$Missing_data$Method, " (", x$Missing_data$Action, ")"
+      x$Missing_data$Method
     )
   }
   
