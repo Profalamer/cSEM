@@ -265,6 +265,7 @@ foreman <- function(
       "Data"          = X,
       "Model"         = csem_model,
       "Arguments"     = args_used,
+      "Missing_data"  = attr(X_cleaned, "missing_info"),
       "Type_of_indicator_correlation" = Cor$cor_type,
       "Threshold_parameter_estimates" = Cor$thres_est,
       "Weight_info"   = list(

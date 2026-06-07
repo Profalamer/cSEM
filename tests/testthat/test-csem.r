@@ -20,8 +20,16 @@ test_that("Missing data can be handled by listwise deletion", {
   dat_missing[3, "y11"] <- NA
   dat_missing[4, "not_used_numeric"] <- NA
   
+  expect_warning(
+    res_default <- csem(dat_missing, model_linear),
+    "listwise deletion"
+  )
+  expect_equal(res_default$Information$Missing_data$Method, "listwise")
+  expect_true(res_default$Information$Missing_data$Missing_data)
+  expect_equal(res_default$Information$Missing_data$Number_of_rows_removed, 1)
+  
   expect_error(
-    csem(dat_missing, model_linear),
+    csem(dat_missing, model_linear, .missing = "error"),
     "Data set contains missing values"
   )
   
@@ -36,6 +44,43 @@ test_that("Missing data can be handled by listwise deletion", {
   
   expect_equal(res_listwise$Information$Data, res_manual$Information$Data)
   expect_equal(res_listwise$Estimates$Path_estimates, res_manual$Estimates$Path_estimates)
+})
+
+test_that("Missing data can be handled by mean replacement", {
+  dat_missing <- threecommonfactors
+  dat_missing[3, "y11"] <- NA
+  dat_missing[4, "not_used_numeric"] <- NA
+  
+  expect_warning(
+    data_mean <- processData(dat_missing, model_linear, .missing = "mean"),
+    "indicator means"
+  )
+  
+  expect_false(anyNA(data_mean))
+  expect_equal(attr(data_mean, "missing_info")$Method, "mean")
+  expect_equal(data_mean[3, "y11"], mean(threecommonfactors$y11, na.rm = TRUE))
+  expect_equal(nrow(data_mean), nrow(threecommonfactors))
+})
+
+test_that("Missing data can be handled by regression imputation", {
+  dat_missing <- threecommonfactors
+  dat_missing[3, "y11"] <- NA
+  dat_missing[5, "y21"] <- NA
+  
+  expect_warning(
+    data_regression <- processData(dat_missing, model_linear, .missing = "regression"),
+    "regression imputation"
+  )
+  expect_false(anyNA(data_regression))
+  expect_equal(attr(data_regression, "missing_info")$Method, "regression")
+  expect_equal(nrow(data_regression), nrow(threecommonfactors))
+  
+  expect_warning(
+    res_regression <- csem(dat_missing, model_linear, .missing = "regression"),
+    "regression imputation"
+  )
+  expect_true(inherits(res_regression, "cSEMResults"))
+  expect_equal(res_regression$Information$Missing_data$Method, "regression")
 })
 
 # ==============================================================================

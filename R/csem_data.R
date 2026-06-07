@@ -6,7 +6,7 @@
 #'   .data        = NULL, 
 #'   .model       = NULL, 
 #'   .instruments = NULL,
-#'   .missing     = "error"
+#'   .missing     = "listwise"
 #'   )
 #'
 #' @inheritParams csem_arguments
@@ -21,7 +21,7 @@ processData <- function(
   .data        = NULL, 
   .model       = NULL, 
   .instruments = NULL,
-  .missing     = "error"
+  .missing     = "listwise"
   ) {
 
   ### Checks, errors and warnings ========
@@ -117,21 +117,113 @@ processData <- function(
 
   # Check if remaining data set contains NAs
   .data_temp <- .data[!complete.cases(.data), , drop = FALSE]
+  missing_info <- list(
+    "Method" = .missing,
+    "Missing_data" = length(rownames(.data_temp)) > 0,
+    "Rows" = rownames(.data_temp),
+    "Number_of_rows" = length(rownames(.data_temp)),
+    "Action" = "none"
+  )
   
   if(length(rownames(.data_temp)) > 0) {
     if(.missing == "listwise") {
       .data <- .data[complete.cases(.data), , drop = FALSE]
+      missing_info$Action <- "Rows with missing values were removed before estimation."
+      missing_info$Number_of_rows_removed <- length(rownames(.data_temp))
       warning2("The following warning occured while processing the data:\n",
                "Data set contains missing values in rows:",
                paste0("`", rownames(.data_temp), "`", collapse = ", "),
                "\nThese rows were removed using listwise deletion.")
+    } else if(.missing == "mean") {
+      .data <- imputeMissingMean(.data)
+      missing_info$Action <- "Missing values were replaced by indicator means before estimation."
+      missing_info$Number_of_rows_imputed <- length(rownames(.data_temp))
+      warning2("The following warning occured while processing the data:\n",
+               "Data set contains missing values in rows:",
+               paste0("`", rownames(.data_temp), "`", collapse = ", "),
+               "\nMissing values were replaced by indicator means.")
+    } else if(.missing == "regression") {
+      .data <- imputeMissingRegression(.data)
+      missing_info$Action <- "Missing values were replaced by regression imputation before estimation."
+      missing_info$Number_of_rows_imputed <- length(rownames(.data_temp))
+      warning2("The following warning occured while processing the data:\n",
+               "Data set contains missing values in rows:",
+               paste0("`", rownames(.data_temp), "`", collapse = ", "),
+               "\nMissing values were replaced by regression imputation.")
     } else {
       stop2("The following error occured while processing the data:\n",
             "Data set contains missing values in rows:", 
             paste0("`", rownames(.data_temp), "`", collapse = ", "),
-            "\nRemove NAs, use imputation methods to replace them, or set `.missing = \"listwise\"`.")
+            "\nRemove NAs, use imputation methods to replace them, or set `.missing` to \"listwise\", \"mean\", or \"regression\".")
     }
   }
+  attr(.data, "missing_info") <- missing_info
   ## Return
   return(.data)
+}
+
+#' Internal: Mean imputation for missing data
+#'
+#' @keywords internal
+#' @noRd
+imputeMissingMean <- function(.data) {
+  missing_columns <- names(.data)[unlist(lapply(.data, anyNA))]
+  nonnumeric_columns <- missing_columns[!unlist(lapply(.data[missing_columns], is.numeric))]
+  
+  if(length(nonnumeric_columns) != 0) {
+    stop2("Mean replacement currently requires numeric indicators. Non-numeric columns with missing values: ",
+          paste0("`", nonnumeric_columns, "`", collapse = ", "), ".")
+  }
+  
+  for(i in missing_columns) {
+    replacement <- mean(.data[[i]], na.rm = TRUE)
+    if(is.nan(replacement)) {
+      stop2("Mean replacement failed because indicator `", i, "` contains only missing values.")
+    }
+    .data[is.na(.data[[i]]), i] <- replacement
+  }
+  
+  return(.data)
+}
+
+#' Internal: Regression imputation for missing data
+#'
+#' @keywords internal
+#' @noRd
+imputeMissingRegression <- function(.data) {
+  missing_columns <- names(.data)[unlist(lapply(.data, anyNA))]
+  nonnumeric_columns <- names(.data)[!unlist(lapply(.data, is.numeric))]
+  
+  if(length(nonnumeric_columns) != 0) {
+    stop2("Regression imputation currently requires all model indicators to be numeric. Non-numeric columns: ",
+          paste0("`", nonnumeric_columns, "`", collapse = ", "), ".")
+  }
+  
+  if(ncol(.data) < 2) {
+    stop2("Regression imputation requires at least two indicators.")
+  }
+  
+  data_imputed <- imputeMissingMean(.data)
+  
+  for(i in missing_columns) {
+    observed_rows <- !is.na(.data[[i]])
+    missing_rows  <- is.na(.data[[i]])
+    predictors    <- setdiff(names(.data), i)
+    
+    if(sum(observed_rows) <= length(predictors)) {
+      stop2("Regression imputation for indicator `", i, "` requires more complete observations than predictors.")
+    }
+    
+    model_data <- data_imputed[observed_rows, c(i, predictors), drop = FALSE]
+    fit <- stats::lm(stats::reformulate(predictors, response = i), data = model_data)
+    predicted <- stats::predict(fit, newdata = data_imputed[missing_rows, predictors, drop = FALSE])
+    
+    if(anyNA(predicted)) {
+      stop2("Regression imputation failed for indicator `", i, "`.")
+    }
+    
+    data_imputed[missing_rows, i] <- predicted
+  }
+  
+  return(data_imputed)
 }

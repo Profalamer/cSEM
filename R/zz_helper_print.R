@@ -33,6 +33,12 @@ printSummarizeOverview <- function(.summarize_object) {
     col_align("\n\tType of indicator correlation", 35), "= ", 
     paste0(x$Type_of_indicator_correlation, collapse = ", ")
   )
+  if(!is.null(x$Missing_data) && isTRUE(x$Missing_data$Missing_data)) {
+    cat2(
+      col_align("\n\tMissing data handling", 35), "= ",
+      x$Missing_data$Method, " (", x$Missing_data$Action, ")"
+    )
+  }
   
   if(!is.null(x$Model$instruments) && x$Arguments$.approach_paths == "2SLS") {
     tmp <- setdiff(names(which(rowSums(x$Model$structural) != 0)), names(x$Model$instruments))

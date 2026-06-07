@@ -27,8 +27,10 @@
 #' Depending on the type/class of the indicator data provided cSEM computes the indicator 
 #' correlation matrix in different ways. See [calculateIndicatorCor()] for details.
 #'
-#' Missing values in `.data` are rejected by default. Set `.missing = "listwise"`
-#' to remove rows with missing values before estimation.
+#' Missing values in `.data` are handled by listwise deletion by default. Set
+#' `.missing = "error"` to stop estimation if missing values are present,
+#' `.missing = "mean"` to replace missing values by indicator means, or
+#' `.missing = "regression"` to use regression imputation.
 #' 
 #' To provide a model use the [lavaan model syntax][lavaan::model.syntax].
 #' Note, however, that \pkg{cSEM} currently only supports the "standard" lavaan
@@ -218,7 +220,7 @@
 #' .id                    = NULL,
 #' .instruments           = NULL,
 #' .iter_max              = 100,
-#' .missing               = c("error", "listwise"),
+#' .missing               = c("listwise", "error", "mean", "regression"),
 #' .normality             = FALSE,
 #' .PLS_approach_cf       = c("dist_squared_euclid", "dist_euclid_weighted", 
 #'                            "fisher_transformed", "mean_arithmetic",
@@ -324,7 +326,7 @@ csem <- function(
   .id                    = NULL,
   .instruments           = NULL,
   .iter_max              = 100,
-  .missing               = c("error", "listwise"),
+  .missing               = c("listwise", "error", "mean", "regression"),
   .normality             = FALSE,
   .PLS_approach_cf       = c("dist_squared_euclid", "dist_euclid_weighted", 
                              "fisher_transformed", "mean_arithmetic",
@@ -482,6 +484,8 @@ csem <- function(
         x <- x[, setdiff(colnames(model_original$measurement), model_original$vars_attached_to_2nd)]
         if(.missing == "listwise") {
           x <- x[complete.cases(x), , drop = FALSE]
+        } else if(.missing %in% c("mean", "regression")) {
+          x <- processData(.data = x, .model = model_original, .missing = .missing)
         }
         x
       })
@@ -495,6 +499,9 @@ csem <- function(
       if(.missing == "listwise") {
         columns <- setdiff(colnames(model_original$measurement), model_original$vars_attached_to_2nd)
         .data <- .data[complete.cases(.data[, columns, drop = FALSE]), , drop = FALSE]
+      } else if(.missing %in% c("mean", "regression")) {
+        columns <- setdiff(colnames(model_original$measurement), model_original$vars_attached_to_2nd)
+        .data[, columns] <- processData(.data = .data, .model = model_original, .missing = .missing)[, columns]
       }
       .data
     }
