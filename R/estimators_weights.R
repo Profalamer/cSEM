@@ -392,10 +392,6 @@ calculateWeightsGSCA <- function(
   W0 <- Lambda0 <- .csem_model$measurement # Weight relation model
   Lambda0[which(.csem_model$construct_type == "Composite"), ]  <- 0
   B0 <- .csem_model$structural # Structural model
-  if(sum(rowSums(B0)) == 0) {
-    tmp <- rownames(B0)
-    B0 <- .csem_model$cor_specified[tmp, tmp]
-  }
   vars_endo    <- rownames(B0)[rowSums(B0) != 0]
   vars_cf      <- names(which(.csem_model$construct_type == "Common factor"))
   
