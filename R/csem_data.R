@@ -3,10 +3,10 @@
 #' Prepare, standardize, check, and clean data provided via the `.data` argument.
 #'
 #' @usage processData(
-#'   .data        = NULL, 
-#'   .model       = NULL, 
-#'   .instruments = NULL,
-#'   .missing     = "listwise"
+#'   .data            = NULL, 
+#'   .model           = NULL, 
+#'   .instruments     = NULL,
+#'   .handle_missing  = NULL
 #'   )
 #'
 #' @inheritParams csem_arguments
@@ -18,10 +18,10 @@
 #' @keywords internal
 
 processData <- function(
-  .data        = NULL, 
-  .model       = NULL, 
-  .instruments = NULL,
-  .missing     = "listwise"
+  .data            = NULL, 
+  .model           = NULL, 
+  .instruments     = NULL,
+  .handle_missing  = NULL
   ) {
 
   ### Checks, errors and warnings ========
@@ -117,8 +117,9 @@ processData <- function(
 
   # Check if remaining data set contains NAs
   .data_temp <- .data[!complete.cases(.data), , drop = FALSE]
+  
   missing_info <- list(
-    "Method" = .missing,
+    "Method" = .handle_missing,
     "Missing_data" = length(rownames(.data_temp)) > 0,
     "Rows" = rownames(.data_temp),
     "Number_of_rows" = length(rownames(.data_temp)),
@@ -126,15 +127,15 @@ processData <- function(
   )
   
   if(length(rownames(.data_temp)) > 0) {
-    if(.missing == "listwise") {
+    if(.handle_missing == "listwise") {
       .data <- .data[complete.cases(.data), , drop = FALSE]
       missing_info$Action <- "Rows with missing values were removed before estimation."
       missing_info$Number_of_rows_removed <- length(rownames(.data_temp))
-    } else if(.missing == "mean") {
+    } else if(.handle_missing == "mean") {
       .data <- imputeMissingMean(.data)
       missing_info$Action <- "Missing values were replaced by indicator means before estimation."
       missing_info$Number_of_rows_imputed <- length(rownames(.data_temp))
-    } else if(.missing == "regression") {
+    } else if(.handle_missing == "regression") {
       .data <- imputeMissingRegression(.data)
       missing_info$Action <- "Missing values were replaced by regression imputation before estimation."
       missing_info$Number_of_rows_imputed <- length(rownames(.data_temp))
@@ -142,7 +143,7 @@ processData <- function(
       stop2("The following error occured while processing the data:\n",
             "Data set contains missing values in rows:", 
             paste0("`", rownames(.data_temp), "`", collapse = ", "),
-            "\nRemove NAs, use imputation methods to replace them, or set `.missing` to \"listwise\", \"mean\", or \"regression\".")
+            "\nRemove NAs, use imputation methods to replace them, or set `.handle_missing` to \"listwise\", \"mean\", or \"regression\".")
     }
   }
   attr(.data, "missing_info") <- missing_info

@@ -181,12 +181,13 @@
 #'   Default to c("*MAE*", "*RMSE*", "*Q2*").
 #' @param .model A model in [lavaan model syntax][lavaan::model.syntax] 
 #'   or a [cSEMModel] list.
-#' @param .missing Character string. How should missing values in `.data` be
+#' @param .handle_missing Character string. How missing values in `.data` should be
 #'   handled? One of: "*listwise*", "*mean*", or "*regression*". If
 #'   "*listwise*", rows containing missing values in model indicators are removed
 #'   before estimation. If "*mean*", missing values are replaced by indicator
 #'   means. If "*regression*", missing values are replaced by deterministic
-#'   regression imputation. Defaults to "*listwise*".
+#'   regression imputation. If no approach is chosen, an error is returned if the dataset
+#'   contains missing values. Defaults to "*NULL*".
 #' @param .moderator Character string. The name of the moderator variable.
 #' @param .modes A vector giving the mode for each construct in the form `"name" = "mode"`. 
 #'   Only used internally. 

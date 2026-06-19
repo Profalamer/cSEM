@@ -25,7 +25,7 @@ test_that("Missing data can be handled by listwise deletion", {
   expect_true(res_default$Information$Missing_data$Missing_data)
   expect_equal(res_default$Information$Missing_data$Number_of_rows_removed, 1)
   
-  expect_silent(res_listwise <- csem(dat_missing, model_linear, .missing = "listwise"))
+  expect_silent(res_listwise <- csem(dat_missing, model_linear, .handle_missing = "listwise"))
   
   res_manual <- csem(dat_missing[complete.cases(dat_missing[, c(
     "y11", "y12", "y13", "y21", "y22", "y23", "y31", "y32", "y33"
@@ -40,7 +40,7 @@ test_that("Missing data can be handled by mean replacement", {
   dat_missing[3, "y11"] <- NA
   dat_missing[4, "not_used_numeric"] <- NA
   
-  expect_silent(data_mean <- processData(dat_missing, model_linear, .missing = "mean"))
+  expect_silent(data_mean <- processData(dat_missing, model_linear, .handle_missing = "mean"))
   
   expect_false(anyNA(data_mean))
   expect_equal(attr(data_mean, "missing_info")$Method, "mean")
@@ -53,12 +53,12 @@ test_that("Missing data can be handled by regression imputation", {
   dat_missing[3, "y11"] <- NA
   dat_missing[5, "y21"] <- NA
   
-  expect_silent(data_regression <- processData(dat_missing, model_linear, .missing = "regression"))
+  expect_silent(data_regression <- processData(dat_missing, model_linear, .handle_missing = "regression"))
   expect_false(anyNA(data_regression))
   expect_equal(attr(data_regression, "missing_info")$Method, "regression")
   expect_equal(nrow(data_regression), nrow(threecommonfactors))
   
-  expect_silent(res_regression <- csem(dat_missing, model_linear, .missing = "regression"))
+  expect_silent(res_regression <- csem(dat_missing, model_linear, .handle_missing = "regression"))
   expect_true(inherits(res_regression, "cSEMResults"))
   expect_equal(res_regression$Information$Missing_data$Method, "regression")
 })
