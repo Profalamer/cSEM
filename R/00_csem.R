@@ -27,7 +27,8 @@
 #' Depending on the type/class of the indicator data provided cSEM computes the indicator 
 #' correlation matrix in different ways. See [calculateIndicatorCor()] for details.
 #'
-#' Missing values in `.data` are handled by listwise deletion by default. Set
+#' Missing values in `.data` are not treated by default, i.e., `.handle_missing = "none"`. Set 
+#' `.handle_missing = "listwise"` for listwise deletion,
 #' `.handle_missing = "mean"` to replace missing values by indicator means, or
 #' `.handle_missing = "regression"` to use regression imputation.
 #' 
@@ -219,7 +220,7 @@
 #' .id                    = NULL,
 #' .instruments           = NULL,
 #' .iter_max              = 100,
-#' .handle_missing        = NULL,
+#' .handle_missing        = c('none', 'listwise', 'mean', 'regression'),
 #' .normality             = FALSE,
 #' .PLS_approach_cf       = c("dist_squared_euclid", "dist_euclid_weighted", 
 #'                            "fisher_transformed", "mean_arithmetic",
@@ -325,7 +326,7 @@ csem <- function(
   .id                    = NULL,
   .instruments           = NULL,
   .iter_max              = 100,
-  .handle_missing        = NULL,
+  .handle_missing        = c('none', 'listwise', 'mean', 'regression'),
   .normality             = FALSE,
   .PLS_approach_cf       = c("dist_squared_euclid", "dist_euclid_weighted", 
                              "fisher_transformed", "mean_arithmetic",
@@ -354,6 +355,7 @@ csem <- function(
   .approach_nl          <- match.arg(.approach_nl)
   .approach_paths       <- match.arg(.approach_paths)
   .approach_weights     <- match.arg(.approach_weights)
+  .handle_missing       <- match.arg(.handle_missing)
   .conv_criterion       <- match.arg(.conv_criterion)
   .eval_plan            <- match.arg(.eval_plan)
   .handle_inadmissibles <- match.arg(.handle_inadmissibles)

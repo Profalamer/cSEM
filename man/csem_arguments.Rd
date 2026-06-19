@@ -202,6 +202,14 @@ For "\emph{replace}" resampling continues until there are exactly \code{.R} admi
 Depending on the frequency of inadmissible solutions this may significantly increase
 computing time. Defaults to "\emph{drop}".}
 
+\item{.handle_missing}{Character string. How missing values in \code{.data} should be
+handled? One of: "\emph{none}", "\emph{listwise}", "\emph{mean}", or "\emph{regression}". If
+"\emph{none}", an error is returned if the dataset contains missing values.If
+"\emph{listwise}", rows containing missing values in model indicators are removed
+before estimation. If "\emph{mean}", missing values are replaced by indicator
+means. If "\emph{regression}", missing values are replaced by deterministic
+regression imputation.  Defaults to "\emph{none}".}
+
 \item{.id}{Character string or integer. A character string giving the name or
 an integer of the position of the column of \code{.data} whose levels are used
 to split \code{.data} into groups. Defaults to \code{NULL}.}
@@ -238,13 +246,6 @@ Default to c("\emph{MAE}", "\emph{RMSE}", "\emph{Q2}").}
 
 \item{.model}{A model in \link[lavaan:model.syntax]{lavaan model syntax}
 or a \link{cSEMModel} list.}
-
-\item{.missing}{Character string. How should missing values in \code{.data} be
-handled? One of: "\emph{listwise}", "\emph{mean}", or "\emph{regression}". If
-"\emph{listwise}", rows containing missing values in model indicators are removed
-before estimation. If "\emph{mean}", missing values are replaced by indicator
-means. If "\emph{regression}", missing values are replaced by deterministic
-regression imputation. Defaults to "\emph{listwise}".}
 
 \item{.moderator}{Character string. The name of the moderator variable.}
 
@@ -394,7 +395,7 @@ from a resample. One of: "\emph{none}", "\emph{bootstrap}" or "\emph{jackknife}"
 resampling from each resample is only required for the studentized confidence
 interval ("\emph{CI_t_interval}") computed by the \code{\link[=infer]{infer()}} function. Defaults to "\emph{none}".}
 
-\item{`.resample_object`}{An R object of class \code{cSEMResults_resampled}
+\item{.resample_object}{An R object of class \code{cSEMResults_resampled}
 obtained from \code{\link[=resamplecSEMResults]{resamplecSEMResults()}} or by setting \code{.resample_method = "bootstrap"}
 or \code{"jackknife"} when calling \code{\link[=csem]{csem()}}.}
 

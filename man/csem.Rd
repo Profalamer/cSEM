@@ -21,7 +21,7 @@ csem(
 .id                    = NULL,
 .instruments           = NULL,
 .iter_max              = 100,
-.missing               = c("listwise", "mean", "regression"),
+.handle_missing        = c('none', 'listwise', 'mean', 'regression'),
 .normality             = FALSE,
 .PLS_approach_cf       = c("dist_squared_euclid", "dist_euclid_weighted", 
                            "fisher_transformed", "mean_arithmetic",
@@ -116,12 +116,13 @@ If \code{iter_max = 1} and \code{.approach_weights = "PLS-PM"} one-step weights 
 If the algorithm exceeds the specified number, weights of iteration step
 \code{.iter_max - 1}  will be returned with a warning. Defaults to \code{100}.}
 
-\item{.missing}{Character string. How should missing values in \code{.data} be
-handled? One of: "\emph{listwise}", "\emph{mean}", or "\emph{regression}". If
+\item{.handle_missing}{Character string. How missing values in \code{.data} should be
+handled? One of: "\emph{none}", "\emph{listwise}", "\emph{mean}", or "\emph{regression}". If
+"\emph{none}", an error is returned if the dataset contains missing values.If
 "\emph{listwise}", rows containing missing values in model indicators are removed
 before estimation. If "\emph{mean}", missing values are replaced by indicator
 means. If "\emph{regression}", missing values are replaced by deterministic
-regression imputation. Defaults to "\emph{listwise}".}
+regression imputation.  Defaults to "\emph{none}".}
 
 \item{.normality}{Logical. Should joint normality of
 \eqn{[\eta_{1:p}; \zeta; \epsilon]}{[\eta_(1:p); \zeta; \epsilon]}
@@ -252,9 +253,10 @@ as (unordered) factors.
 Depending on the type/class of the indicator data provided cSEM computes the indicator
 correlation matrix in different ways. See \code{\link[=calculateIndicatorCor]{calculateIndicatorCor()}} for details.
 
-Missing values in \code{.data} are handled by listwise deletion by default. Set
-\code{.missing = "mean"} to replace missing values by indicator means, or
-\code{.missing = "regression"} to use regression imputation.
+Missing values in \code{.data} are not treated by default, i.e., \code{.handle_missing = "none"}. Set
+\code{.handle_missing = "listwise"} for listwise deletion,
+\code{.handle_missing = "mean"} to replace missing values by indicator means, or
+\code{.handle_missing = "regression"} to use regression imputation.
 
 To provide a model use the \link[lavaan:model.syntax]{lavaan model syntax}.
 Note, however, that \pkg{cSEM} currently only supports the "standard" lavaan

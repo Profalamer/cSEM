@@ -5,10 +5,10 @@
 \title{Internal: Process data}
 \usage{
 processData(
-  .data        = NULL, 
-  .model       = NULL, 
-  .instruments = NULL,
-  .missing     = "listwise"
+  .data            = NULL, 
+  .model           = NULL, 
+  .instruments     = NULL,
+  .handle_missing  = NULL
   )
 }
 \arguments{
@@ -28,12 +28,13 @@ contain the names of the instruments corresponding to each equation. Note
 that exogenous variables of a given equation \strong{must} be supplied as
 instruments for themselves. Defaults to \code{NULL}.}
 
-\item{.missing}{Character string. How should missing values in \code{.data} be
-handled? One of: "\emph{listwise}", "\emph{mean}", or "\emph{regression}". If
+\item{.handle_missing}{Character string. How missing values in \code{.data} should be
+handled? One of: "\emph{none}", "\emph{listwise}", "\emph{mean}", or "\emph{regression}". If
+"\emph{none}", an error is returned if the dataset contains missing values.If
 "\emph{listwise}", rows containing missing values in model indicators are removed
 before estimation. If "\emph{mean}", missing values are replaced by indicator
 means. If "\emph{regression}", missing values are replaced by deterministic
-regression imputation. Defaults to "\emph{listwise}".}
+regression imputation.  Defaults to "\emph{none}".}
 }
 \value{
 A (N x K) data.frame containing the standardized data with columns ordered
