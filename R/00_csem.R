@@ -28,8 +28,8 @@
 #' correlation matrix in different ways. See [calculateIndicatorCor()] for details.
 #'
 #' Missing values in `.data` are handled by listwise deletion by default. Set
-#' `.missing = "mean"` to replace missing values by indicator means, or
-#' `.missing = "regression"` to use regression imputation.
+#' `.handle_missing = "mean"` to replace missing values by indicator means, or
+#' `.handle_missing = "regression"` to use regression imputation.
 #' 
 #' To provide a model use the [lavaan model syntax][lavaan::model.syntax].
 #' Note, however, that \pkg{cSEM} currently only supports the "standard" lavaan
@@ -219,7 +219,7 @@
 #' .id                    = NULL,
 #' .instruments           = NULL,
 #' .iter_max              = 100,
-#' .missing               = c("listwise", "mean", "regression"),
+#' .handle_missing        = NULL,
 #' .normality             = FALSE,
 #' .PLS_approach_cf       = c("dist_squared_euclid", "dist_euclid_weighted", 
 #'                            "fisher_transformed", "mean_arithmetic",
@@ -325,7 +325,7 @@ csem <- function(
   .id                    = NULL,
   .instruments           = NULL,
   .iter_max              = 100,
-  .missing               = c("listwise", "mean", "regression"),
+  .handle_missing        = NULL,
   .normality             = FALSE,
   .PLS_approach_cf       = c("dist_squared_euclid", "dist_euclid_weighted", 
                              "fisher_transformed", "mean_arithmetic",
@@ -357,7 +357,6 @@ csem <- function(
   .conv_criterion       <- match.arg(.conv_criterion)
   .eval_plan            <- match.arg(.eval_plan)
   .handle_inadmissibles <- match.arg(.handle_inadmissibles)
-  .missing              <- match.arg(.missing)
   .PLS_approach_cf      <- match.arg(.PLS_approach_cf)
   .PLS_weight_scheme_inner <- match.arg(.PLS_weight_scheme_inner)
   .resample_method      <- match.arg(.resample_method)
@@ -481,10 +480,10 @@ csem <- function(
         # Order data according to the ordering of the measurement model; delete
         # all columns that are not needed
         x <- x[, setdiff(colnames(model_original$measurement), model_original$vars_attached_to_2nd)]
-        if(.missing == "listwise") {
+        if(.handle_missing == "listwise") {
           x <- x[complete.cases(x), , drop = FALSE]
-        } else if(.missing %in% c("mean", "regression")) {
-          x <- processData(.data = x, .model = model_original, .missing = .missing)
+        } else if(.handle_missing %in% c("mean", "regression")) {
+          x <- processData(.data = x, .model = model_original, .handle_missing = .handle_missing)
         }
         x
       })
@@ -495,12 +494,12 @@ csem <- function(
       # data_pooled[, "id"] <- rep(names(out), times = sapply(.data, nrow))
       data_pooled
     } else {
-      if(.missing == "listwise") {
+      if(.handle_missing == "listwise") {
         columns <- setdiff(colnames(model_original$measurement), model_original$vars_attached_to_2nd)
         .data <- .data[complete.cases(.data[, columns, drop = FALSE]), , drop = FALSE]
-      } else if(.missing %in% c("mean", "regression")) {
+      } else if(.handle_missing %in% c("mean", "regression")) {
         columns <- setdiff(colnames(model_original$measurement), model_original$vars_attached_to_2nd)
-        .data[, columns] <- processData(.data = .data, .model = model_original, .missing = .missing)[, columns]
+        .data[, columns] <- processData(.data = .data, .model = model_original, .handle_missing = .handle_missing)[, columns]
       }
       .data
     }
