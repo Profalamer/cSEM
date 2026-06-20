@@ -119,11 +119,10 @@ processData <- function(
   .data_temp <- .data[!complete.cases(.data), , drop = FALSE]
   
   missing_info <- list(
-    "Method" = .handle_missing,
+    "Approach_missing" = .handle_missing,
     "Missing_data" = length(rownames(.data_temp)) > 0,
-    "Rows" = rownames(.data_temp),
-    "Number_of_rows" = length(rownames(.data_temp)),
-    "Action" = "none"
+    "Rows_with_missing" = rownames(.data_temp),
+    "Number_of_rows_missing" = length(rownames(.data_temp))
   )
   
   if(length(rownames(.data_temp)) > 0) {
@@ -137,18 +136,12 @@ processData <- function(
       
     } else if (.handle_missing == "listwise") {
       .data <- .data[complete.cases(.data), , drop = FALSE]
-      missing_info$Action <- "Rows with missing values were removed before estimation."
-      missing_info$Number_of_rows_removed <- length(rownames(.data_temp))
-      
     } else if (.handle_missing == "mean") {
       .data <- imputeMissingMean(.data)
-      missing_info$Action <- "Missing values were replaced by indicator means before estimation."
-      missing_info$Number_of_rows_imputed <- length(rownames(.data_temp))
     } else if (.handle_missing == "regression") {
       .data <- imputeMissingRegression(.data)
-      missing_info$Action <- "Missing values were replaced by regression imputation before estimation."
-      missing_info$Number_of_rows_imputed <- length(rownames(.data_temp))
     }
+    missing_info$Number_of_rows_imputed <- nrow(.data_temp)
   }
   attr(.data, "missing_info") <- missing_info
   ## Return
@@ -164,7 +157,7 @@ imputeMissingMean <- function(.data) {
   nonnumeric_columns <- missing_columns[!unlist(lapply(.data[missing_columns], is.numeric))]
   
   if(length(nonnumeric_columns) != 0) {
-    stop2("Mean replacement currently requires numeric indicators. Non-numeric columns with missing values: ",
+    stop2("Mean replacement currently requires numeric indicators. Non-numeric indicators with missing values: ",
           paste0("`", nonnumeric_columns, "`", collapse = ", "), ".")
   }
   
@@ -188,7 +181,7 @@ imputeMissingRegression <- function(.data) {
   nonnumeric_columns <- names(.data)[!unlist(lapply(.data, is.numeric))]
   
   if(length(nonnumeric_columns) != 0) {
-    stop2("Regression imputation currently requires all model indicators to be numeric. Non-numeric columns: ",
+    stop2("Regression imputation currently requires all indicators to be numeric. Non-numeric indicators: ",
           paste0("`", nonnumeric_columns, "`", collapse = ", "), ".")
   }
   
