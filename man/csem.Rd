@@ -18,10 +18,10 @@ csem(
 .disattenuate          = TRUE,
 .dominant_indicators   = NULL,
 .estimate_structural   = TRUE,
+.handle_missing        = c('none', 'listwise', 'mean', 'regression'),
 .id                    = NULL,
 .instruments           = NULL,
 .iter_max              = 100,
-.handle_missing        = c('none', 'listwise', 'mean', 'regression'),
 .normality             = FALSE,
 .PLS_approach_cf       = c("dist_squared_euclid", "dist_euclid_weighted", 
                            "fisher_transformed", "mean_arithmetic",
@@ -100,6 +100,14 @@ Default to \code{NULL}.}
 \item{.estimate_structural}{Logical. Should the structural coefficients
 be estimated? Defaults to \code{TRUE}.}
 
+\item{.handle_missing}{Character string. How missing values in \code{.data} should be
+handled? One of: "\emph{none}", "\emph{listwise}", "\emph{mean}", or "\emph{regression}". If
+"\emph{none}", an error is returned if the dataset contains missing values.If
+"\emph{listwise}", rows containing missing values in model indicators are removed
+before estimation. If "\emph{mean}", missing values are replaced by indicator
+means. If "\emph{regression}", missing values are replaced by deterministic
+regression imputation.  Defaults to "\emph{none}".}
+
 \item{.id}{Character string or integer. A character string giving the name or
 an integer of the position of the column of \code{.data} whose levels are used
 to split \code{.data} into groups. Defaults to \code{NULL}.}
@@ -115,14 +123,6 @@ instruments for themselves. Defaults to \code{NULL}.}
 If \code{iter_max = 1} and \code{.approach_weights = "PLS-PM"} one-step weights are returned.
 If the algorithm exceeds the specified number, weights of iteration step
 \code{.iter_max - 1}  will be returned with a warning. Defaults to \code{100}.}
-
-\item{.handle_missing}{Character string. How missing values in \code{.data} should be
-handled? One of: "\emph{none}", "\emph{listwise}", "\emph{mean}", or "\emph{regression}". If
-"\emph{none}", an error is returned if the dataset contains missing values.If
-"\emph{listwise}", rows containing missing values in model indicators are removed
-before estimation. If "\emph{mean}", missing values are replaced by indicator
-means. If "\emph{regression}", missing values are replaced by deterministic
-regression imputation.  Defaults to "\emph{none}".}
 
 \item{.normality}{Logical. Should joint normality of
 \eqn{[\eta_{1:p}; \zeta; \epsilon]}{[\eta_(1:p); \zeta; \epsilon]}
