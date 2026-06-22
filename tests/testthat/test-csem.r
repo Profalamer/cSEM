@@ -270,12 +270,10 @@ test_that("DPG_2ndorder_composites_of_composites is correctly estimated", {
 })
 
 
-# Check against results of cSEM version 0.6.1 ----
+# Compare against the results of cSEM version 0.6.1 ----
+# 2 common factor model ----
 
-
-# Compare against 2 common factor model ----
-
-# Load cSEM 06-01 results 
+# Load cSEM 0.6.1.9999 results 
 load(file = "../data/csem061_linear_2commonfactors.Rdata")
 
 # Estimate model with current csem function 
@@ -429,3 +427,163 @@ for (nm in names(out$res_flat$Sigma_list)) {
     }
   })
 }
+
+# Compare against the results of cSEM version 0.6.1 (listwise deletion)----
+# Load cSEM 0.6.1.9999 results 
+load(file = "../data/csem061_linear_2commonfactors.Rdata")
+
+# Estimate model with current csem function 
+res_current <-  csem(.data = out$data$data, 
+                     .model = out$model$model_Sigma,
+                     .resample_method = 'bootstrap',
+                     .seed = 1234,
+                     .R = 100,
+                     .handle_missing="listwise")
+
+res_flat_current = cSEM:::flattencSEMResults(res_current)
+# remove .handle_missing argument
+# res_flat_model_Sigma_current$`Information$Data`
+# Information$Arguments$.handle_missing <- NULL
+
+for (nm in names(out$res_flat$Sigma)) {
+  test_that(paste0("linear_2commonfactors: flattened results match reference: ", nm), {
+    ref_flat <- out$res_flat$Sigma[nm]
+    cur_flat <- res_flat_current[nm]
+    
+    # 1. Structural check: same set of leaf paths in both versions?
+    # expect_setequal(names(cur_flat), names(ref_flat))
+    
+    # 2. Value check: one assertion per leaf, labelled by its path
+    for (p in intersect(names(ref_flat), names(cur_flat))) {
+      expect_equal(
+        cur_flat[[p]],
+        ref_flat[[p]],
+        tolerance = 1e-6,
+        info = paste0("[", nm, "] path: ", p)   # tells you which result changed
+      )
+    }
+  })
+}
+
+## Comparison Sigma_alt2 ----
+# Estimate model with current csem function 
+res                   <-  csem(.data = out$data$data, 
+                               .model = out$model$model_Sigma_alt2,
+                               .resample_method = 'bootstrap',
+                               .seed = 1234,
+                               .R = 100)
+
+res_flat_current = cSEM:::flattencSEMResults(res)
+
+for (nm in names(out$res_flat$Sigma_alt2)) {
+  test_that(paste0("linear_2commonfactors: flattened results match reference: ", nm), {
+    ref_flat <- out$res_flat$Sigma_alt2[nm]
+    cur_flat <- res_flat_current[nm]
+    
+    # 1. Structural check: same set of leaf paths in both versions?
+    # expect_setequal(names(cur_flat), names(ref_flat))
+    
+    # 2. Value check: one assertion per leaf, labelled by its path
+    for (p in intersect(names(ref_flat), names(cur_flat))) {
+      expect_equal(
+        cur_flat[[p]],
+        ref_flat[[p]],
+        tolerance = 1e-6,
+        info = paste0("[", nm, "] path: ", p)   # tells you which result changed
+      )
+    }
+  })
+}
+
+# Comparison datasets as list
+res                   <-  csem(.data = out$data$datalist, 
+                               .model = out$model$model_Sigma,
+                               .resample_method = 'bootstrap',
+                               .seed = 1234,
+                               .R = 100)
+
+res_flat_current = cSEM:::flattencSEMResults(res)
+
+for (nm in names(out$res_flat$Sigma_list)) {
+  test_that(paste0("linear_2commonfactors: flattened results match reference: ", nm), {
+    ref_flat <- out$res_flat$Sigma_list[nm]
+    cur_flat <- res_flat_current[nm]
+    
+    # 1. Structural check: same set of leaf paths in both versions?
+    # expect_setequal(names(cur_flat), names(ref_flat))
+    
+    # 2. Value check: one assertion per leaf, labelled by its path
+    for (p in intersect(names(ref_flat), names(cur_flat))) {
+      expect_equal(
+        cur_flat[[p]],
+        ref_flat[[p]],
+        tolerance = 1e-6,
+        info = paste0("[", nm, "] path: ", p)   # tells you which result changed
+      )
+    }
+  })
+}
+
+# Comparison datasets with categorical grouping variable
+res                   <-  csem(.data = out$data$data_id_cat, 
+                               .model = out$model$model_Sigma,
+                               .resample_method = 'bootstrap',
+                               .seed = 1234,
+                               .R = 100,
+                               .id='varcat')
+
+res_flat_current = cSEM:::flattencSEMResults(res)
+
+for (nm in names(out$res_flat$Sigma_list)) {
+  test_that(paste0("linear_2commonfactors: flattened results match reference: ", nm), {
+    ref_flat <- out$res_flat$Sigma_id_cat[nm]
+    cur_flat <- res_flat_current[nm]
+    
+    # 1. Structural check: same set of leaf paths in both versions?
+    # expect_setequal(names(cur_flat), names(ref_flat))
+    
+    # 2. Value check: one assertion per leaf, labelled by its path
+    for (p in intersect(names(ref_flat), names(cur_flat))) {
+      expect_equal(
+        cur_flat[[p]],
+        ref_flat[[p]],
+        tolerance = 1e-6,
+        info = paste0("[", nm, "] path: ", p)   # tells you which result changed
+      )
+    }
+  })
+}
+
+
+# Comparison datasets with numerical grouping variable
+res                   <-  csem(.data = out$data$data_id_num, 
+                               .model = out$model$model_Sigma,
+                               .resample_method = 'bootstrap',
+                               .seed = 1234,
+                               .R = 100,
+                               .id='varnum')
+
+res_flat_current = cSEM:::flattencSEMResults(res)
+
+for (nm in names(out$res_flat$Sigma_list)) {
+  test_that(paste0("linear_2commonfactors: flattened results match reference: ", nm), {
+    ref_flat <- out$res_flat$Sigma_id_num[nm]
+    cur_flat <- res_flat_current[nm]
+    
+    # 1. Structural check: same set of leaf paths in both versions?
+    # expect_setequal(names(cur_flat), names(ref_flat))
+    
+    # 2. Value check: one assertion per leaf, labelled by its path
+    for (p in intersect(names(ref_flat), names(cur_flat))) {
+      expect_equal(
+        cur_flat[[p]],
+        ref_flat[[p]],
+        tolerance = 1e-6,
+        info = paste0("[", nm, "] path: ", p)   # tells you which result changed
+      )
+    }
+  })
+}
+
+
+
