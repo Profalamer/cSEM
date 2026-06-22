@@ -125,7 +125,7 @@ processData <- function(
     "Number_of_rows_missing" = length(rownames(.data_temp))
   )
   
-  if(length(rownames(.data_temp)) > 0) {
+  if(nrow(.data_temp) > 0) {
     if (.handle_missing == "none") {
       stop2(
         "The following error occured while processing the data:\n",
