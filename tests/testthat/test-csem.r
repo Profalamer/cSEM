@@ -440,7 +440,11 @@ res_current <-  csem(.data = out$dataorg$data,
                      .R = 100,
                      .handle_missing="listwise")
 
+rownames(res_current$Estimates$Construct_scores)<-NULL
+
 res_flat_current = cSEM:::flattencSEMResults(res_current)
+
+
 # remove .handle_missing argument
 # res_flat_model_Sigma_current$`Information$Data`
 # Information$Arguments$.handle_missing <- NULL
